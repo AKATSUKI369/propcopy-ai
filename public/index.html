@@ -36,24 +36,18 @@
   .auth-title { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 700; margin-bottom: 10px; }
   .auth-title em { font-style: italic; color: var(--accent); }
   .auth-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
-  .auth-input {
-    width: 100%; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 6px; color: var(--text); font-family: 'Outfit', sans-serif;
-    font-size: 14px; padding: 13px 16px; outline: none; margin-bottom: 12px;
-    transition: border-color 0.2s;
+  .google-btn {
+    width: 100%; padding: 14px 20px;
+    background: #fff; color: #1a1a1a;
+    border: none; border-radius: 6px;
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
   }
-  .auth-input:focus { border-color: var(--accent); }
-  .auth-input::placeholder { color: var(--text-dim); }
-  .auth-btn {
-    width: 100%; padding: 14px; background: var(--accent); color: #0c0f0a;
-    border: none; border-radius: 6px; font-family: 'Outfit', sans-serif;
-    font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-  }
-  .auth-btn:hover { background: #c8ff58; }
-  .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .auth-msg { font-size: 13px; color: var(--accent); margin-top: 16px; display: none; line-height: 1.5; }
-  .auth-msg.show { display: block; }
-  .auth-err { color: var(--red); }
+  .google-btn:hover { background: #f0f0f0; box-shadow: 0 4px 20px rgba(255,255,255,0.1); transform: translateY(-1px); }
+  .google-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .google-icon { width: 20px; height: 20px; flex-shrink: 0; }
+  .auth-note { font-size: 12px; color: var(--text-dim); margin-top: 16px; line-height: 1.5; }
 
   /* TOPBAR */
   .topbar {
@@ -65,11 +59,9 @@
   }
   .topbar-logo { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; }
   .topbar-right { display: flex; align-items: center; gap: 16px; }
-  .usage-badge {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    color: var(--text-muted); letter-spacing: 0.1em;
-  }
+  .usage-badge { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; }
   .usage-badge span { color: var(--accent); }
+  .user-email { font-size: 12px; color: var(--text-dim); }
   .signout-btn {
     background: transparent; border: 1px solid var(--border);
     border-radius: 4px; color: var(--text-muted); font-size: 12px;
@@ -151,7 +143,7 @@
   footer { text-align: center; margin-top: 56px; color: var(--text-dim); font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.1em; }
   footer span { color: var(--accent-dim); }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @media (max-width: 580px) { .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: 1; } .form-card { padding: 22px 18px; } h1 { font-size: 2.2rem; } .topbar { padding: 12px 16px; } }
+  @media (max-width: 580px) { .form-grid { grid-template-columns: 1fr; } .field.full { grid-column: 1; } .form-card { padding: 22px 18px; } h1 { font-size: 2.2rem; } .topbar { padding: 12px 16px; } .user-email { display: none; } }
 </style>
 </head>
 <body>
@@ -161,10 +153,17 @@
   <div class="auth-card">
     <span class="auth-logo">✦ PropCopy AI</span>
     <h2 class="auth-title">Sign in to <em>continue</em></h2>
-    <p class="auth-sub">Enter your email and we'll send you a magic link — no password needed.</p>
-    <input type="email" class="auth-input" id="authEmail" placeholder="your@email.com" />
-    <button class="auth-btn" id="authBtn" onclick="sendMagicLink()">Send Magic Link →</button>
-    <p class="auth-msg" id="authMsg"></p>
+    <p class="auth-sub">Real estate content generated instantly. Sign in with Google to get started — it's free.</p>
+    <button class="google-btn" id="googleBtn" onclick="signInWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Continue with Google
+    </button>
+    <p class="auth-note">5 free generations included. No credit card required.</p>
   </div>
 </div>
 
@@ -190,7 +189,8 @@
 <div class="topbar" id="topbar" style="display:none;">
   <div class="topbar-logo">✦ PropCopy AI</div>
   <div class="topbar-right">
-    <div class="usage-badge" id="usageBadge">Generations: <span>—</span> / 5</div>
+    <div class="usage-badge" id="usageBadge">Generations: <span>0</span> / 5</div>
+    <div class="user-email" id="userEmail"></div>
     <button class="signout-btn" onclick="signOut()">Sign Out</button>
   </div>
 </div>
@@ -295,12 +295,9 @@ const FREE_LIMIT = 5;
 let currentUser = null;
 let userGenerations = 0;
 
-// ── INIT ──
 async function init() {
   const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) {
-    await onSignedIn(session.user);
-  }
+  if (session?.user) await onSignedIn(session.user);
   sb.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) await onSignedIn(session.user);
     else showAuth();
@@ -312,6 +309,7 @@ async function onSignedIn(user) {
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('topbar').style.display = 'flex';
   document.getElementById('appContainer').style.display = 'block';
+  document.getElementById('userEmail').textContent = user.email || '';
   await loadUsage();
 }
 
@@ -322,7 +320,6 @@ function showAuth() {
   document.getElementById('appContainer').style.display = 'none';
 }
 
-// ── USAGE ──
 async function loadUsage() {
   const { data } = await sb.from('usage').select('generations').eq('user_id', currentUser.id).single();
   userGenerations = data?.generations || 0;
@@ -330,8 +327,7 @@ async function loadUsage() {
 }
 
 function updateUsageBadge() {
-  const badge = document.getElementById('usageBadge');
-  badge.innerHTML = `Generations: <span>${userGenerations}</span> / ${FREE_LIMIT}`;
+  document.getElementById('usageBadge').innerHTML = `Generations: <span>${userGenerations}</span> / ${FREE_LIMIT}`;
 }
 
 async function incrementUsage() {
@@ -340,22 +336,13 @@ async function incrementUsage() {
   updateUsageBadge();
 }
 
-// ── AUTH ──
-async function sendMagicLink() {
-  const email = document.getElementById('authEmail').value.trim();
-  const msg = document.getElementById('authMsg');
-  const btn = document.getElementById('authBtn');
-  if (!email) { showAuthMsg('Please enter your email address.', true); return; }
-  btn.disabled = true; btn.textContent = 'Sending...';
-  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
-  if (error) { showAuthMsg(error.message, true); }
-  else { showAuthMsg('✓ Magic link sent! Check your email and click the link to sign in.', false); }
-  btn.disabled = false; btn.textContent = 'Send Magic Link →';
-}
-
-function showAuthMsg(msg, isErr) {
-  const el = document.getElementById('authMsg');
-  el.textContent = msg; el.className = 'auth-msg show' + (isErr ? ' auth-err' : '');
+async function signInWithGoogle() {
+  const btn = document.getElementById('googleBtn');
+  btn.disabled = true; btn.textContent = 'Redirecting...';
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
 }
 
 async function signOut() {
@@ -363,7 +350,6 @@ async function signOut() {
   showAuth();
 }
 
-// ── TONE PILLS ──
 document.querySelectorAll('.tone-pill').forEach(p => {
   p.addEventListener('click', () => {
     document.querySelectorAll('.tone-pill').forEach(x => x.classList.remove('active'));
@@ -375,13 +361,11 @@ function getTone() { return document.querySelector('.tone-pill.active')?.dataset
 function showErr(msg) { const b = document.getElementById('errorBox'); b.textContent = msg; b.classList.add('visible'); }
 function hideErr() { document.getElementById('errorBox').classList.remove('visible'); }
 
-// ── GENERATE ──
 async function generate() {
   if (userGenerations >= FREE_LIMIT) {
     document.getElementById('paywallOverlay').classList.add('show');
     return;
   }
-
   hideErr();
   const propType = document.getElementById('propType').value;
   const price    = document.getElementById('price').value.trim();
@@ -425,25 +409,19 @@ Instagram/LinkedIn caption with 2-3 emojis and 8-10 hashtags. Under 150 words.`;
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data?.error || 'API error');
-
     const text = data.text || '';
     const listingMatch = text.match(/<<<LISTING>>>([\s\S]*?)(?=<<<EMAIL>>>|$)/);
     const emailMatch   = text.match(/<<<EMAIL>>>([\s\S]*?)(?=<<<SOCIAL>>>|$)/);
     const socialMatch  = text.match(/<<<SOCIAL>>>([\s\S]*?)$/);
-
     document.getElementById('listing').textContent = listingMatch ? listingMatch[1].trim() : '—';
     document.getElementById('email').textContent   = emailMatch   ? emailMatch[1].trim()   : '—';
     document.getElementById('social').textContent  = socialMatch  ? socialMatch[1].trim()  : '—';
-
     document.getElementById('results').classList.add('visible');
     document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
     await incrementUsage();
-
     if (userGenerations >= FREE_LIMIT) {
       setTimeout(() => document.getElementById('paywallOverlay').classList.add('show'), 2000);
     }
-
   } catch(e) {
     showErr('Error: ' + (e.message || 'Something went wrong. Please try again.'));
   } finally {
