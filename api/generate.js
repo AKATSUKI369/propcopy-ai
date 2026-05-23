@@ -27,17 +27,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an expert US real estate copywriter. Always respond with exactly 3 sections using these exact markers on their own lines:
-<<<LISTING>>>
-<<<EMAIL>>>
-<<<SOCIAL>>>
-Do not use any other markers or headers. Put each section's content after its marker.`
-          },
-          { role: 'user', content: prompt }
-        ],
+        messages: [{ role: 'user', content: prompt }],
         temperature: 0.85,
         max_tokens: 1800
       })
@@ -47,16 +37,7 @@ Do not use any other markers or headers. Put each section's content after its ma
     if (!groqRes.ok) throw new Error(data?.error?.message || 'Groq API error');
 
     const text = data?.choices?.[0]?.message?.content || '';
-
-    const listingMatch = text.match(/<<<LISTING>>>([\s\S]*?)(?=<<<EMAIL>>>|$)/);
-    const emailMatch   = text.match(/<<<EMAIL>>>([\s\S]*?)(?=<<<SOCIAL>>>|$)/);
-    const socialMatch  = text.match(/<<<SOCIAL>>>([\s\S]*?)$/);
-
-    return res.status(200).json({
-      listing: listingMatch ? listingMatch[1].trim() : '',
-      email:   emailMatch   ? emailMatch[1].trim()   : '',
-      social:  socialMatch  ? socialMatch[1].trim()  : ''
-    });
+    return res.status(200).json({ text });
 
   } catch (e) {
     return res.status(500).json({ error: e.message || 'Something went wrong' });
