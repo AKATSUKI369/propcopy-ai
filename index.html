@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PropCopy AI — Real Estate Content Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0c0f0a;
+    --surface: #141710;
+    --surface2: #1c2018;
+    --border: #2a3024;
+    --accent: #b8f04a;
+    --accent-dim: #8ab835;
+    --accent-glow: rgba(184,240,74,0.12);
+    --text: #e8edd8;
+    --text-muted: #7a8a6a;
+    --text-dim: #4a5a3a;
+    --red: #ff6b5b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Outfit', sans-serif; font-weight: 300;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(184,240,74,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(184,240,74,0.03) 1px, transparent 1px);
+    background-size: 48px 48px; pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; position: relative; z-index: 1; }
+
+  header { text-align: center; margin-bottom: 48px; animation: fadeDown 0.7s ease both; }
+  .logo-tag {
+    display: inline-block; font-family: 'DM Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--accent); background: var(--accent-glow);
+    border: 1px solid rgba(184,240,74,0.25); padding: 5px 14px; border-radius: 2px;
+    margin-bottom: 18px; text-transform: uppercase;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 12px;
+  }
+  h1 span { color: var(--accent); font-style: italic; }
+  .subtitle { color: var(--text-muted); font-size: 1rem; max-width: 440px; margin: 0 auto; line-height: 1.6; }
+
+  .form-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 32px; margin-bottom: 24px; animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field.full { grid-column: 1 / -1; }
+  label {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  input, select, textarea {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px;
+    font-weight: 300; padding: 11px 14px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  select option { background: var(--surface2); }
+  textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+  input::placeholder, textarea::placeholder { color: var(--text-dim); }
+
+  .tone-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tone-pill {
+    padding: 6px 15px; border-radius: 100px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted); font-size: 13px;
+    font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.15s;
+  }
+  .tone-pill:hover { border-color: var(--accent-dim); color: var(--text); }
+  .tone-pill.active { background: var(--accent); border-color: var(--accent); color: #0c0f0a; font-weight: 500; }
+
+  .gen-btn {
+    width: 100%; margin-top: 24px; padding: 16px; background: var(--accent); color: #0c0f0a;
+    border: none; border-radius: 8px; font-family: 'Outfit', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .gen-btn:hover { background: #c8ff58; box-shadow: 0 0 24px rgba(184,240,74,0.3); }
+  .gen-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+  .spinner {
+    width: 17px; height: 17px; border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #0c0f0a; border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: none;
+  }
+  .gen-btn.loading .spinner { display: block; }
+
+  .results { display: none; flex-direction: column; gap: 18px; animation: fadeUp 0.5s ease both; }
+  .results.visible { display: flex; }
+  .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .result-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 22px; border-bottom: 1px solid var(--border); background: var(--surface2);
+  }
+  .result-title {
+    display: flex; align-items: center; gap: 9px; font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent);
+  }
+  .copy-btn {
+    background: transparent; border: 1px solid var(--border); border-radius: 5px;
+    color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.1em; padding: 5px 13px; cursor: pointer; transition: all 0.15s; text-transform: uppercase;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  .result-body { padding: 22px; font-size: 14.5px; line-height: 1.8; color: var(--text); white-space: pre-wrap; font-weight: 300; }
+
+  .error-box {
+    background: rgba(255,107,91,0.08); border: 1px solid rgba(255,107,91,0.25);
+    border-radius: 8px; padding: 14px 18px; color: var(--red); font-size: 13px;
+    display: none; margin-top: 14px; line-height: 1.5;
+  }
+  .error-box.visible { display: block; }
+
+  footer {
+    text-align: center; margin-top: 56px; color: var(--text-dim);
+    font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.1em;
+  }
+  footer span { color: var(--accent-dim); }
+
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp   { from { opacity:0; transform:translateY(18px);  } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin     { to { transform: rotate(360deg); } }
+
+  @media (max-width: 580px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .field.full { grid-column: 1; }
+    .form-card { padding: 22px 18px; }
+    h1 { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo-tag">✦ PropCopy AI</div>
+    <h1>Real Estate Content,<br/><span>Generated Instantly</span></h1>
+    <p class="subtitle">Enter property details and get a listing description, buyer follow-up email, and social caption — all in one click.</p>
+  </header>
+
+  <div class="form-card">
+    <div class="form-grid">
+      <div class="field">
+        <label>Property Type</label>
+        <select id="propType">
+          <option>Single Family Home</option>
+          <option>Condo / Apartment</option>
+          <option>Townhouse</option>
+          <option>Luxury Villa</option>
+          <option>Commercial Property</option>
+          <option>Land / Lot</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Listing Price</label>
+        <input type="text" id="price" placeholder="e.g. $485,000" />
+      </div>
+      <div class="field">
+        <label>Bedrooms / Bathrooms</label>
+        <input type="text" id="beds" placeholder="e.g. 3 bed / 2 bath" />
+      </div>
+      <div class="field">
+        <label>Square Footage</label>
+        <input type="text" id="sqft" placeholder="e.g. 1,850 sq ft" />
+      </div>
+      <div class="field">
+        <label>Location / Neighborhood</label>
+        <input type="text" id="location" placeholder="e.g. Austin, TX – South Congress" />
+      </div>
+      <div class="field">
+        <label>Year Built</label>
+        <input type="text" id="year" placeholder="e.g. 2018" />
+      </div>
+      <div class="field full">
+        <label>Key Features & Highlights</label>
+        <textarea id="features" placeholder="e.g. Open-concept kitchen, granite countertops, hardwood floors, 2-car garage, backyard pool, newly renovated bathrooms, close to top-rated schools..."></textarea>
+      </div>
+      <div class="field full">
+        <label>Content Tone</label>
+        <div class="tone-group" id="toneGroup">
+          <button class="tone-pill active" data-tone="Luxury and sophisticated">Luxury</button>
+          <button class="tone-pill" data-tone="Warm and friendly">Warm & Friendly</button>
+          <button class="tone-pill" data-tone="Professional and direct">Professional</button>
+          <button class="tone-pill" data-tone="Exciting and energetic">Exciting</button>
+          <button class="tone-pill" data-tone="Minimalist and clean">Minimalist</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="generate()">
+      <div class="spinner"></div>
+      <span id="btnTxt">✦ Generate All Content</span>
+    </button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-title">📝 Listing Description</div>
+        <button class="copy-btn" onclick="copyText('listing', this)">Copy</button>
+      </div>
+      <div class="result-body" id="listing"></div>
+    </div>
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-title">📧 Buyer Follow-Up Email</div>
+        <button class="copy-btn" onclick="copyText('email', this)">Copy</button>
+      </div>
+      <div class="result-body" id="email"></div>
+    </div>
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-title">📱 Social Media Caption</div>
+        <button class="copy-btn" onclick="copyText('social', this)">Copy</button>
+      </div>
+      <div class="result-body" id="social"></div>
+    </div>
+  </div>
+
+  <footer>Built with <span>PropCopy AI</span> · Powered by Groq (Llama 3.3 70B) · Free to use</footer>
+</div>
+
+<script>
+  document.querySelectorAll('.tone-pill').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('.tone-pill').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+    });
+  });
+
+  function getTone() { return document.querySelector('.tone-pill.active')?.dataset.tone || 'Professional'; }
+  function showErr(msg) { const b = document.getElementById('errorBox'); b.textContent = msg; b.classList.add('visible'); }
+  function hideErr() { document.getElementById('errorBox').classList.remove('visible'); }
+
+  async function generate() {
+    hideErr();
+    const propType = document.getElementById('propType').value;
+    const price    = document.getElementById('price').value.trim();
+    const beds     = document.getElementById('beds').value.trim();
+    const sqft     = document.getElementById('sqft').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const year     = document.getElementById('year').value.trim();
+    const features = document.getElementById('features').value.trim();
+    const tone     = getTone();
+
+    if (!location && !features) return showErr('Please fill in at least the Location and Key Features fields.');
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true; btn.classList.add('loading');
+    document.getElementById('btnTxt').textContent = 'Generating…';
+
+    const prompt = `You are an expert US real estate copywriter. Generate 3 pieces of content for the following property using a ${tone} tone.
+
+PROPERTY DETAILS:
+- Type: ${propType}
+- Price: ${price || 'Not specified'}
+- Bedrooms/Bathrooms: ${beds || 'Not specified'}
+- Square Footage: ${sqft || 'Not specified'}
+- Location: ${location || 'Not specified'}
+- Year Built: ${year || 'Not specified'}
+- Key Features: ${features || 'Not specified'}
+
+Use exactly these headers (with brackets):
+
+[LISTING DESCRIPTION]
+3-4 paragraph MLS listing description. Vivid, benefit-focused prose. End with a call to action. No bullet points.
+
+[FOLLOW-UP EMAIL]
+Follow-up email from agent to interested buyer. First line: "Subject: ...". Warm and helpful, 150-200 words.
+
+[SOCIAL CAPTION]
+Instagram/LinkedIn caption with 2-3 emojis and 8-10 hashtags at the end. Under 150 words.`;
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'API error');
+      const text = data.text || '';
+      if (!text) throw new Error('No content returned. Please try again.');
+
+      const listingMatch = text.match(/\[LISTING DESCRIPTION\]([\s\S]*?)(?=\[FOLLOW-UP EMAIL\]|$)/i);
+      const emailMatch   = text.match(/\[FOLLOW-UP EMAIL\]([\s\S]*?)(?=\[SOCIAL CAPTION\]|$)/i);
+      const socialMatch  = text.match(/\[SOCIAL CAPTION\]([\s\S]*?)$/i);
+
+      document.getElementById('listing').textContent = listingMatch ? listingMatch[1].trim() : text;
+      document.getElementById('email').textContent   = emailMatch   ? emailMatch[1].trim()   : '—';
+      document.getElementById('social').textContent  = socialMatch  ? socialMatch[1].trim()  : '—';
+
+      document.getElementById('results').classList.add('visible');
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch(e) {
+      showErr('Error: ' + (e.message || 'Something went wrong. Please try again.'));
+    } finally {
+      btn.disabled = false; btn.classList.remove('loading');
+      document.getElementById('btnTxt').textContent = '✦ Generate All Content';
+    }
+  }
+
+  function copyText(id, btn) {
+    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
+      btn.textContent = 'Copied!'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
