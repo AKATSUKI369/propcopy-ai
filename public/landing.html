@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PropCopy AI — Real Estate Content, Generated Instantly</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,600&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0c08;
+  --surface: #111410;
+  --surface2: #181c14;
+  --border: #252b1e;
+  --accent: #b8f04a;
+  --accent-dim: #7ab830;
+  --accent-glow: rgba(184,240,74,0.1);
+  --text: #e4ead4;
+  --text-muted: #6e7e5e;
+  --text-dim: #3a4a2e;
+  --gold: #d4a853;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* Grid background */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(184,240,74,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,240,74,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 48px;
+  background: rgba(10,12,8,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  animation: fadeDown 0.6s ease both;
+}
+
+.nav-logo {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; letter-spacing: 0.15em;
+  color: var(--accent); text-transform: uppercase;
+}
+
+.nav-links { display: flex; align-items: center; gap: 36px; }
+.nav-links a {
+  font-size: 13px; color: var(--text-muted);
+  text-decoration: none; transition: color 0.2s;
+  letter-spacing: 0.03em;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  padding: 9px 22px;
+  background: var(--accent); color: #0a0c08;
+  border-radius: 4px; font-size: 13px; font-weight: 600;
+  text-decoration: none; transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.nav-cta:hover { background: #c8ff58; box-shadow: 0 0 20px rgba(184,240,74,0.3); }
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative; z-index: 1;
+}
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-glow);
+  border: 1px solid rgba(184,240,74,0.2);
+  padding: 7px 18px; border-radius: 2px;
+  margin-bottom: 36px;
+  animation: fadeUp 0.7s 0.1s ease both;
+}
+
+.hero-tag::before { content: '✦'; font-size: 9px; }
+
+.hero-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.2rem, 8vw, 7rem);
+  font-weight: 700; line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
+  animation: fadeUp 0.7s 0.2s ease both;
+}
+
+.hero-headline em {
+  font-style: italic; color: var(--accent);
+  display: block;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--text-muted); max-width: 520px;
+  line-height: 1.7; margin-bottom: 48px;
+  animation: fadeUp 0.7s 0.3s ease both;
+}
+
+.hero-btns {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.7s 0.4s ease both;
+}
+
+.btn-primary {
+  padding: 16px 36px; background: var(--accent); color: #0a0c08;
+  border-radius: 5px; font-size: 15px; font-weight: 600;
+  text-decoration: none; transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.btn-primary:hover { background: #c8ff58; box-shadow: 0 0 30px rgba(184,240,74,0.35); transform: translateY(-1px); }
+
+.btn-secondary {
+  padding: 16px 36px; background: transparent; color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+  font-size: 15px; text-decoration: none; transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.hero-stat-row {
+  display: flex; gap: 48px; margin-top: 72px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.7s 0.5s ease both;
+}
+
+.hero-stat { text-align: center; }
+.hero-stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem; font-weight: 700; color: var(--accent);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 12px; color: var(--text-muted);
+  font-family: 'DM Mono', monospace; letter-spacing: 0.1em;
+  margin-top: 6px; text-transform: uppercase;
+}
+
+/* ─── SECTION COMMON ─── */
+section { position: relative; z-index: 1; }
+
+.section-tag {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px; display: block;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  font-weight: 700; line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.section-title em { font-style: italic; color: var(--accent); }
+
+/* ─── HOW IT WORKS ─── */
+.how {
+  padding: 120px 48px;
+  max-width: 1100px; margin: 0 auto;
+}
+
+.how-header { text-align: center; margin-bottom: 72px; }
+.how-sub { color: var(--text-muted); margin-top: 16px; font-size: 1.05rem; }
+
+.steps {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; background: var(--border);
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+}
+
+.step {
+  background: var(--surface); padding: 40px 36px;
+  transition: background 0.2s;
+}
+.step:hover { background: var(--surface2); }
+
+.step-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4rem; font-weight: 700; color: var(--text-dim);
+  line-height: 1; margin-bottom: 20px;
+}
+
+.step-title {
+  font-size: 1.1rem; font-weight: 500; margin-bottom: 10px;
+}
+
+.step-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+/* ─── OUTPUTS ─── */
+.outputs { padding: 120px 48px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+.outputs-inner { max-width: 1100px; margin: 0 auto; }
+
+.outputs-header { margin-bottom: 64px; }
+
+.output-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.output-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.output-card:hover { border-color: rgba(184,240,74,0.3); transform: translateY(-3px); }
+
+.output-card-head {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface);
+}
+
+.output-icon { font-size: 18px; }
+
+.output-label {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent);
+}
+
+.output-body {
+  padding: 20px; font-size: 13.5px; color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.output-tag {
+  display: inline-block; margin-top: 16px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent-dim);
+  border: 1px solid rgba(184,240,74,0.15);
+  padding: 4px 10px; border-radius: 2px;
+}
+
+/* ─── PRICING ─── */
+.pricing { padding: 120px 48px; max-width: 900px; margin: 0 auto; text-align: center; }
+
+.pricing-header { margin-bottom: 56px; }
+
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; }
+
+.plan {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 40px; position: relative;
+  transition: border-color 0.2s;
+}
+
+.plan:hover { border-color: rgba(184,240,74,0.25); }
+
+.plan.featured {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(184,240,74,0.04) 100%);
+}
+
+.plan-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: #0a0c08;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 4px 16px; border-radius: 20px; font-weight: 500;
+  white-space: nowrap;
+}
+
+.plan-name {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 16px;
+}
+
+.plan-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.5rem; font-weight: 700; line-height: 1;
+  margin-bottom: 6px;
+}
+
+.plan-price sup { font-size: 1.5rem; vertical-align: top; margin-top: 8px; }
+.plan-price span { font-size: 1rem; color: var(--text-muted); font-family: 'Outfit', sans-serif; font-weight: 300; }
+
+.plan-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; }
+
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+
+.plan-features li {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--text);
+}
+
+.plan-features li::before { content: '✓'; color: var(--accent); font-weight: 600; flex-shrink: 0; }
+.plan-features li.no { color: var(--text-muted); }
+.plan-features li.no::before { content: '×'; color: var(--text-dim); }
+
+.plan-btn {
+  display: block; width: 100%; padding: 14px;
+  text-align: center; border-radius: 6px;
+  font-size: 14px; font-weight: 600; text-decoration: none;
+  font-family: 'Outfit', sans-serif; transition: all 0.2s;
+}
+
+.plan-btn-outline {
+  border: 1px solid var(--border); color: var(--text);
+  background: transparent;
+}
+.plan-btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+.plan-btn-filled {
+  background: var(--accent); color: #0a0c08;
+}
+.plan-btn-filled:hover { background: #c8ff58; box-shadow: 0 0 20px rgba(184,240,74,0.3); }
+
+/* ─── TESTIMONIAL ─── */
+.testimonial-section {
+  padding: 100px 48px;
+  background: var(--surface); border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.testimonial-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+
+.quote-mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 6rem; color: var(--accent); line-height: 0.5;
+  margin-bottom: 24px; display: block; opacity: 0.5;
+}
+
+.quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-style: italic; line-height: 1.5;
+  color: var(--text); margin-bottom: 28px;
+}
+
+.quote-author {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted);
+}
+
+/* ─── CTA ─── */
+.cta-section {
+  padding: 140px 48px; text-align: center; position: relative; z-index: 1;
+}
+
+.cta-glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(184,240,74,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-section .section-title { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: 20px; }
+.cta-section .hero-sub { margin: 0 auto 48px; }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border); padding: 32px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 1;
+}
+
+.footer-logo {
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase;
+}
+
+.footer-copy {
+  font-size: 12px; color: var(--text-dim);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp   { from { opacity:0; transform:translateY(24px);  } to { opacity:1; transform:translateY(0); } }
+
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .how, .outputs, .pricing, .cta-section, .testimonial-section { padding: 80px 20px; }
+  .steps { grid-template-columns: 1fr; }
+  .output-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px 20px; }
+  .hero-stat-row { gap: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">✦ PropCopy AI</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#outputs">Features</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <a href="https://propcopy-ai-rho.vercel.app" class="nav-cta" target="_blank">Try for Free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">AI-Powered Real Estate Copywriting</div>
+  <h1 class="hero-headline">
+    Stop Writing.<br/>
+    <em>Start Closing.</em>
+  </h1>
+  <p class="hero-sub">PropCopy AI writes your listing descriptions, buyer follow-up emails, and social captions in 10 seconds — so you can focus on what actually makes you money.</p>
+  <div class="hero-btns">
+    <a href="https://propcopy-ai-rho.vercel.app" class="btn-primary" target="_blank">Try PropCopy AI Free →</a>
+    <a href="#how" class="btn-secondary">See How It Works</a>
+  </div>
+  <div class="hero-stat-row">
+    <div class="hero-stat">
+      <div class="hero-stat-num">3</div>
+      <div class="hero-stat-label">Content pieces per click</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">10s</div>
+      <div class="hero-stat-label">Average generation time</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">$0</div>
+      <div class="hero-stat-label">To start today</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-header reveal">
+    <span class="section-tag">How it works</span>
+    <h2 class="section-title">Three steps to <em>perfect copy</em></h2>
+    <p class="how-sub">No writing experience needed. No prompting skills required.</p>
+  </div>
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Enter property details</div>
+      <p class="step-desc">Fill in the basics — type, price, beds, location, and a few key features. Takes under 60 seconds.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Pick your tone</div>
+      <p class="step-desc">Choose from Luxury, Warm & Friendly, Professional, Exciting, or Minimalist. The AI adapts accordingly.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Get 3 pieces of content</div>
+      <p class="step-desc">Your listing description, buyer email, and social caption are ready to copy and use instantly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- OUTPUTS -->
+<section class="outputs" id="outputs">
+  <div class="outputs-inner">
+    <div class="outputs-header reveal">
+      <span class="section-tag">What you get</span>
+      <h2 class="section-title">Everything you need,<br/><em>in one click</em></h2>
+    </div>
+    <div class="output-grid">
+      <div class="output-card reveal">
+        <div class="output-card-head">
+          <span class="output-icon">📝</span>
+          <span class="output-label">Listing Description</span>
+        </div>
+        <div class="output-body">
+          A compelling 4-paragraph MLS-ready description. Vivid, benefit-focused prose that makes buyers book a showing.
+          <span class="output-tag">MLS Ready</span>
+        </div>
+      </div>
+      <div class="output-card reveal">
+        <div class="output-card-head">
+          <span class="output-icon">📧</span>
+          <span class="output-label">Follow-Up Email</span>
+        </div>
+        <div class="output-body">
+          A personalized buyer follow-up email with subject line. Warm, professional, and ready to send in one click.
+          <span class="output-tag">Send-Ready</span>
+        </div>
+      </div>
+      <div class="output-card reveal">
+        <div class="output-card-head">
+          <span class="output-icon">📱</span>
+          <span class="output-label">Social Caption</span>
+        </div>
+        <div class="output-body">
+          An engaging Instagram & LinkedIn caption with emojis and hashtags. Grows your audience while you sleep.
+          <span class="output-tag">Instagram + LinkedIn</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="testimonial-section">
+  <div class="testimonial-inner reveal">
+    <span class="quote-mark">"</span>
+    <p class="quote-text">I used to spend 2 hours writing content for every new listing. PropCopy AI does it in 10 seconds and the quality is better than what I was writing myself.</p>
+    <div class="quote-author">Sarah M. — Real Estate Agent, Austin TX</div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-header reveal">
+    <span class="section-tag">Pricing</span>
+    <h2 class="section-title">Simple, <em>transparent</em> pricing</h2>
+  </div>
+  <div class="pricing-grid reveal">
+    <div class="plan">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price"><sup>$</sup>0<span>/month</span></div>
+      <p class="plan-desc">Perfect for trying out PropCopy AI on your first listings.</p>
+      <ul class="plan-features">
+        <li>5 generations per month</li>
+        <li>All 3 content types</li>
+        <li>All tone options</li>
+        <li class="no">Priority generation</li>
+        <li class="no">Custom branding</li>
+        <li class="no">Email support</li>
+      </ul>
+      <a href="https://propcopy-ai-rho.vercel.app" class="plan-btn plan-btn-outline" target="_blank">Get Started Free</a>
+    </div>
+    <div class="plan featured">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price"><sup>$</sup>49<span>/month</span></div>
+      <p class="plan-desc">For active agents who list multiple properties every month.</p>
+      <ul class="plan-features">
+        <li>Unlimited generations</li>
+        <li>All 3 content types</li>
+        <li>All tone options</li>
+        <li>Priority generation</li>
+        <li>Custom branding</li>
+        <li>Email support</li>
+      </ul>
+      <a href="https://propcopy-ai-rho.vercel.app" class="plan-btn plan-btn-filled" target="_blank">Start Pro — $49/mo</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <span class="section-tag reveal">Get started today</span>
+  <h2 class="section-title reveal">Your next listing deserves<br/><em>better copy</em></h2>
+  <p class="hero-sub reveal">Join real estate agents across the US who are saving hours every week with PropCopy AI.</p>
+  <a href="https://propcopy-ai-rho.vercel.app" class="btn-primary reveal" target="_blank">Try PropCopy AI Free →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">✦ PropCopy AI</div>
+  <div class="footer-copy">© 2026 PropCopy AI · Built for US Real Estate Agents</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
