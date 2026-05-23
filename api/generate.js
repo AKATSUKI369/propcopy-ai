@@ -8,12 +8,8 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  let body = '';
-  if (typeof req.body === 'string') {
-    try { body = JSON.parse(req.body); } catch { body = req.body; }
-  } else {
-    body = req.body;
-  }
+  let body = req.body;
+  if (typeof body === 'string') { try { body = JSON.parse(body); } catch {} }
 
   const prompt = body?.prompt;
   if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
@@ -31,7 +27,17 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert US real estate copywriter. Always respond with exactly 3 sections using these exact markers on their own lines:
+<<<LISTING>>>
+<<<EMAIL>>>
+<<<SOCIAL>>>
+Do not use any other markers or headers. Put each section's content after its marker.`
+          },
+          { role: 'user', content: prompt }
+        ],
         temperature: 0.85,
         max_tokens: 1800
       })
@@ -41,7 +47,17 @@ export default async function handler(req, res) {
     if (!groqRes.ok) throw new Error(data?.error?.message || 'Groq API error');
 
     const text = data?.choices?.[0]?.message?.content || '';
-    return res.status(200).json({ text });
+
+    const listingMatch = text.match(/<<<LISTING>>>([\s\S]*?)(?=<<<EMAIL>>>|$)/);
+    const emailMatch   = text.match(/<<<EMAIL>>>([\s\S]*?)(?=<<<SOCIAL>>>|$)/);
+    const socialMatch  = text.match(/<<<SOCIAL>>>([\s\S]*?)$/);
+
+    return res.status(200).json({
+      listing: listingMatch ? listingMatch[1].trim() : '',
+      email:   emailMatch   ? emailMatch[1].trim()   : '',
+      social:  socialMatch  ? socialMatch[1].trim()  : ''
+    });
+
   } catch (e) {
     return res.status(500).json({ error: e.message || 'Something went wrong' });
   }
