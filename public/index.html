@@ -293,16 +293,11 @@ Instagram/LinkedIn caption with 2-3 emojis and 8-10 hashtags at the end. Under 1
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'API error');
-      const text = data.text || '';
-      if (!text) throw new Error('No content returned. Please try again.');
+      if (!data.listing && !data.email && !data.social) throw new Error('No content returned. Please try again.');
 
-      const listingMatch = text.match(/\[LISTING DESCRIPTION\]([\s\S]*?)(?=\[FOLLOW-UP EMAIL\]|$)/i);
-      const emailMatch   = text.match(/\[FOLLOW-UP EMAIL\]([\s\S]*?)(?=\[SOCIAL CAPTION\]|$)/i);
-      const socialMatch  = text.match(/\[SOCIAL CAPTION\]([\s\S]*?)$/i);
-
-      document.getElementById('listing').textContent = listingMatch ? listingMatch[1].trim() : text;
-      document.getElementById('email').textContent   = emailMatch   ? emailMatch[1].trim()   : '—';
-      document.getElementById('social').textContent  = socialMatch  ? socialMatch[1].trim()  : '—';
+      document.getElementById('listing').textContent = data.listing || '—';
+      document.getElementById('email').textContent   = data.email   || '—';
+      document.getElementById('social').textContent  = data.social  || '—';
 
       document.getElementById('results').classList.add('visible');
       document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
